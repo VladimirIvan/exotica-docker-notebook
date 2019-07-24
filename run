@@ -1,7 +1,5 @@
 #!/bin/bash
 
-PORT=8888
-
 if which xdg-open > /dev/null
 then
   cmd=( xdg-open )
@@ -10,8 +8,6 @@ then
   cmd=( gnome-open )
 fi
 
-sleep 2 && exec ${cmd} http://127.0.0.1:$PORT &
-sleep 2 && exec ${cmd} http://127.0.0.1:7000/static/ &
+sleep 2 && exec ${cmd} http://127.0.0.1:8888 &
 
-docker run --rm -p $PORT:8888 -p 6000:6000 -p 7000:7000 --mount type=bind,source="$(pwd)"/notebooks,target=/home/jovyan/notebooks exotica:notebook
-# docker run --rm -p $PORT:8888 --mount type=bind,source="$(pwd)"/notebooks,target=/home/jovyan/notebooks exotica:notebook
+./run_noui

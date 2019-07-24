@@ -1,0 +1,6 @@
+#!/bin/bash
+
+PORT=8888
+
+docker run --rm -p $PORT:8888 -p 6000:6000 -p 7000:7000 --mount type=bind,source="$(pwd)"/notebooks,target=/home/jovyan/notebooks vladimirivan/exotica-notebook:latest
+

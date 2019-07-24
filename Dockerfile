@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
    apt-get install -yq --no-install-recommends \
    wget bzip2 ca-certificates sudo locales fonts-liberation \
-   python-catkin-tools ros-melodic-exotica-examples \
+   python-catkin-tools ros-melodic-exotica-examples ros-melodic-talos-description \
    ros-melodic-exotica-val-description ros-melodic-exotica \
    python-pip python3-pip net-tools libzmq3-dev python3-setuptools python-setuptools && \
    pip3 install wheel && \
@@ -64,7 +64,7 @@ USER root
 
 
 RUN mkdir -p /home/$NB_USER/catkin_ws/src && cd /home/$NB_USER/catkin_ws/src && \
-   git clone -n https://github.com/ipab-slmc/exotica.git && cd exotica && git checkout 50f9374 && \
+   git clone -n https://github.com/ipab-slmc/exotica.git && cd exotica && git checkout 5595361 && \
    cd /home/$NB_USER/catkin_ws && \
    apt-get update && \
    rosdep update && \
