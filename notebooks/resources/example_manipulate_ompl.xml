@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<PlannerDemoConfig>
+
+  <RRTConnectSolver Name="MySolver">
+    <SimplifyTryCnt>10</SimplifyTryCnt>
+    <SimplifyInterpolationLength>50</SimplifyInterpolationLength>
+  </RRTConnectSolver>
+
+  <SamplingProblem Name="MyProblem">
+
+    <PlanningScene>
+      <Scene>
+        <JointGroup>arm</JointGroup>
+        <URDF>{exotica_examples}/resources/robots/lwr_simplified.urdf</URDF>
+        <SRDF>{exotica_examples}/resources/robots/lwr_simplified.srdf</SRDF>
+        <LoadScene>{exotica_examples}/resources/scenes/example_manipulate.scene</LoadScene>
+        <AttachLinks>
+            <AttachLink Name="Item" Parent="lwr_arm_7_link" Local="1" Transform="0 0 0.15"/>
+        </AttachLinks>
+      </Scene>
+    </PlanningScene>
+
+    <Maps>
+      <CollisionCheck Name="Collision" SelfCollision="0" />
+    </Maps>
+
+    <Equality>
+      <Task Task="Collision"/>
+    </Equality>
+
+
+    <Goal>-1.6424184539829831 0.8509590165106927 1.8015942804276643 1.6779558141114048 0.85462816011659 0.2439412188288062 0.0</Goal>
+    <StartState>1.6424184539826914 0.8509590165102353 -1.8015942804282228 1.6779558141115232 -0.8546281601158062 0.24394121882972722 0.0</StartState>
+  </SamplingProblem>
+
+</PlannerDemoConfig>
