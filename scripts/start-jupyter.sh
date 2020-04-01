@@ -6,7 +6,7 @@ echo Jupyter notbook URL: http://$IP:8888
 
 set -e
 
-source ~/catkin_ws/install/setup.bash
+source /opt/ros/melodic/setup.bash
 
 roscore &
 
