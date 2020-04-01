@@ -10,7 +10,8 @@ source ~/catkin_ws/install/setup.bash
 
 roscore &
 
-meshcat-server -z=tcp://127.0.0.1:6000 -f='/' &
+meshcat-server -z=tcp://127.0.0.1:6000 &
+meshcat-ros-fileserver -f / &
 
 cmd=(jupyter notebook "$@" --ip=0.0.0.0 --no-browser)
 

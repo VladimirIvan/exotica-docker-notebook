@@ -64,7 +64,7 @@ USER root
 
 
 RUN mkdir -p /home/$NB_USER/catkin_ws/src && cd /home/$NB_USER/catkin_ws/src && \
-   git clone -n https://github.com/ipab-slmc/exotica.git && cd exotica && git checkout 5595361 && \
+   git clone -n https://github.com/ipab-slmc/exotica.git && cd exotica && git checkout b5eb32e && \
    cd /home/$NB_USER/catkin_ws && \
    apt-get update && \
    rosdep update && \
@@ -79,9 +79,14 @@ RUN mkdir -p /home/$NB_USER/catkin_ws/src && cd /home/$NB_USER/catkin_ws/src && 
    rm -rf /home/$NB_USER/catkin_ws/.catkin_tools
 
 RUN cd /home/$NB_USER/ && \
-   git clone --recursive --single-branch --branch vi-fileserver https://github.com/VladimirIvan/meshcat-python.git && \
+   git clone --recursive --single-branch --branch master https://github.com/rdeits/meshcat-python.git && \
    cd /home/$NB_USER/meshcat-python && python3 setup.py install && \
    rm -rf /home/$NB_USER/meshcat-python
+
+RUN cd /home/$NB_USER/ && \
+   git clone https://github.com/VladimirIvan/meshcat_ros_fileserver.git && \
+   cd /home/$NB_USER/meshcat_ros_fileserver && python3 setup.py install && \
+   rm -rf /home/$NB_USER/meshcat_ros_fileserver
 
 RUN fix-permissions /home/$NB_USER
 
