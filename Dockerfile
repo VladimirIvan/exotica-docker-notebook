@@ -1,6 +1,6 @@
 FROM ros:melodic-ros-core
 
-ARG NB_USER="jovyan"
+ARG NB_USER="exotica"
 ARG NB_UID="1000"
 ARG NB_GID="100"
 
@@ -12,8 +12,8 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
    apt-get install -yq --no-install-recommends \
    wget bzip2 ca-certificates sudo locales fonts-liberation \
-   python-catkin-tools ros-melodic-exotica-examples ros-melodic-talos-description \
-   ros-melodic-exotica-val-description ros-melodic-exotica \
+   python-catkin-tools ros-melodic-talos-description \
+   ros-melodic-exotica-val-description \
    python-pip python3-pip net-tools libzmq3-dev python3-setuptools python-setuptools && \
    pip3 install wheel && \
    pip2 install wheel && \
@@ -38,7 +38,7 @@ ENV HOME=/home/$NB_USER
 ADD scripts/fix-permissions /usr/local/bin/fix-permissions
 
 
-# Create NB_USER wtih name jovyan user with UID=1000 and in the 'users' group
+# Create NB_USER with name exotica user with UID=1000 and in the 'users' group
 # and make sure these dirs are writable by the `users` group.
 RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su && \
     sed -i.bak -e 's/^%admin/#%admin/' /etc/sudoers && \
@@ -62,21 +62,16 @@ RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
 
 USER root
 
-
 RUN mkdir -p /home/$NB_USER/catkin_ws/src && cd /home/$NB_USER/catkin_ws/src && \
    git clone -n https://github.com/ipab-slmc/exotica.git && cd exotica && git checkout b5eb32e && \
    cd /home/$NB_USER/catkin_ws && \
    apt-get update && \
    rosdep update && \
    rosdep install --from-paths src --ignore-src -r -y -i && \
-   /bin/bash -c "source /opt/ros/melodic/setup.bash && cd ~/catkin_ws && catkin init && catkin config --install && catkin build" && \
-   echo 'source ~/catkin_ws/install/setup.bash' >> /home/$NB_USER/.bashrc && \
-   rm -rf /var/lib/apt/lists/* && \
-   rm -rf /home/$NB_USER/catkin_ws/build && \
-   rm -rf /home/$NB_USER/catkin_ws/devel && \
-   rm -rf /home/$NB_USER/catkin_ws/src && \
-   rm -rf /home/$NB_USER/catkin_ws/logs && \
-   rm -rf /home/$NB_USER/catkin_ws/.catkin_tools
+   /bin/bash -c "source /opt/ros/melodic/setup.bash && cd ~/catkin_ws && catkin init && catkin config --install -i /opt/ros/melodic --cmake-args -DCMAKE_BUILD_TYPE=Release && catkin build" && \
+   echo 'source /opt/ros/melodic/setup.bash' >> /home/$NB_USER/.bashrc && \
+   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+   rm -rf /home/$NB_USER/catkin_ws
 
 RUN cd /home/$NB_USER/ && \
    git clone --recursive --single-branch --branch master https://github.com/rdeits/meshcat-python.git && \
@@ -103,6 +98,5 @@ EXPOSE 8888
 EXPOSE 6000
 EXPOSE 7000
 
-# Switch back to jovyan to avoid accidental container runs as root
+# Switch back to exotica to avoid accidental container runs as root
 USER $NB_UID
-
