@@ -82,11 +82,6 @@ RUN mkdir -p /home/$NB_USER/catkin_ws/src && cd /home/$NB_USER/catkin_ws/src && 
    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
    rm -rf /home/$NB_USER/catkin_ws
 
-# RUN cd /home/$NB_USER/ && \
-#    git clone --recursive --single-branch --branch master https://github.com/rdeits/meshcat-python.git && \
-#    cd /home/$NB_USER/meshcat-python && python3 setup.py install && \
-#    rm -rf /home/$NB_USER/meshcat-python
-
 RUN pip3 install meshcat
 
 RUN cd /home/$NB_USER/ && \
