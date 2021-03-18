@@ -11,14 +11,16 @@ USER root
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
    apt-get install -yq --no-install-recommends \
-   wget bzip2 ca-certificates sudo locales fonts-liberation \
-   python-catkin-tools ros-melodic-talos-description \
-   ros-melodic-exotica-val-description \
+   wget bzip2 ca-certificates sudo locales fonts-liberation git cmake build-essential \
+   python-catkin-tools python-rosdep python-rosinstall ros-melodic-talos-description \
+   ros-melodic-exotica-val-description ros-melodic-exotica ros-melodic-exotica-examples\
    python-pip python3-pip net-tools libzmq3-dev python3-setuptools python-setuptools && \
-   pip3 install wheel && \
-   pip2 install wheel && \
+   rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install wheel && \
+   pip2 install wheel setuptools twine && \
    pip3 install jupyter ipywidgets tini && \
-   pip2 install numpy==1.16.0 scipy matplotlib ipykernel ipywidgets meshcat && \
+   pip2 install numpy scipy matplotlib ipykernel meshcat && \
    rm -rf /var/lib/apt/lists/* && \
    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
    locale-gen && \
@@ -62,21 +64,30 @@ RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" && \
 
 USER root
 
+RUN rosdep init
+
+USER $NB_UID
+
+RUN rosdep update
+
+USER root
+
 RUN mkdir -p /home/$NB_USER/catkin_ws/src && cd /home/$NB_USER/catkin_ws/src && \
-   git clone -n https://github.com/ipab-slmc/exotica.git && cd exotica && git checkout b5eb32e && \
+   git clone -n https://github.com/ipab-slmc/exotica.git && cd exotica && git checkout f4396a3 && \
    cd /home/$NB_USER/catkin_ws && \
    apt-get update && \
-   rosdep update && \
    rosdep install --from-paths src --ignore-src -r -y -i && \
-   /bin/bash -c "source /opt/ros/melodic/setup.bash && cd ~/catkin_ws && catkin init && catkin config --install -i /opt/ros/melodic --cmake-args -DCMAKE_BUILD_TYPE=Release && catkin build" && \
+   /bin/bash -c "source /opt/ros/melodic/setup.bash && cd ~/catkin_ws && catkin init && catkin config --install -i /opt/ros/melodic --blacklist exotica_pinocchio_dynamics_solver --cmake-args -DCMAKE_BUILD_TYPE=Release && catkin build" && \
    echo 'source /opt/ros/melodic/setup.bash' >> /home/$NB_USER/.bashrc && \
    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
    rm -rf /home/$NB_USER/catkin_ws
 
-RUN cd /home/$NB_USER/ && \
-   git clone --recursive --single-branch --branch master https://github.com/rdeits/meshcat-python.git && \
-   cd /home/$NB_USER/meshcat-python && python3 setup.py install && \
-   rm -rf /home/$NB_USER/meshcat-python
+# RUN cd /home/$NB_USER/ && \
+#    git clone --recursive --single-branch --branch master https://github.com/rdeits/meshcat-python.git && \
+#    cd /home/$NB_USER/meshcat-python && python3 setup.py install && \
+#    rm -rf /home/$NB_USER/meshcat-python
+
+RUN pip3 install meshcat
 
 RUN cd /home/$NB_USER/ && \
    git clone https://github.com/VladimirIvan/meshcat_ros_fileserver.git && \
@@ -85,6 +96,9 @@ RUN cd /home/$NB_USER/ && \
 
 RUN fix-permissions /home/$NB_USER
 
+RUN echo "${NB_USER}:password" | chpasswd && \
+  adduser ${NB_USER} sudo
+
 # Configure container startup
 USER $NB_UID
 RUN mkdir /home/$NB_USER/notebooks
@@ -92,6 +106,8 @@ USER root
 
 WORKDIR /home/$NB_USER/notebooks
 COPY scripts/start-jupyter.sh /usr/local/bin/
+COPY scripts/kernel2.json /usr/local/share/jupyter/kernels/python2/kernel.json
+COPY scripts/kernel2.json /usr/local/share/jupyter/kernels/python3/kernel.json
 ENTRYPOINT ["start-jupyter.sh", "--NotebookApp.token=''", "--NotebookApp.password=''"]
 
 EXPOSE 8888

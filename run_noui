@@ -2,5 +2,13 @@
 
 PORT=8888
 
-docker run --rm -p $PORT:8888 -p 6000:6000 -p 7000:7000 --mount type=bind,source="$(pwd)"/notebooks,target=/home/exotica/notebooks vladimirivan/exotica-notebook:latest
+export LOCAL_USER_ID=`id -u $USER`
+export LOCAL_GROUP_ID=`id -g $USER`
+export LOCAL_GROUP_NAME=`id -gn $USER`
+DOCKER_USER_ARGS="--env LOCAL_USER_ID --env LOCAL_GROUP_ID --env LOCAL_GROUP_NAME"
+
+docker run --rm -p $PORT:8888 -p 6000:6000 -p 7000:7000 \
+    $DOCKER_USER_ARGS --privileged \
+    --mount type=bind,source="$(pwd)"/notebooks,target=/home/exotica/notebooks \
+    vladimirivan/exotica-notebook:latest
 
