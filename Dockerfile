@@ -94,6 +94,8 @@ RUN cd /home/$NB_USER/ && \
    cd /home/$NB_USER/meshcat_ros_fileserver && python3 setup.py install && \
    rm -rf /home/$NB_USER/meshcat_ros_fileserver
 
+RUN pip2 install --upgrade pip && pip2 install --upgrade setuptools && pip2 install ipywidgets
+
 RUN fix-permissions /home/$NB_USER
 
 RUN echo "${NB_USER}:password" | chpasswd && \
@@ -105,7 +107,6 @@ RUN mkdir /home/$NB_USER/notebooks
 USER root
 
 WORKDIR /home/$NB_USER/notebooks
-COPY scripts/start-jupyter.sh /usr/local/bin/
 COPY scripts/kernel2.json /usr/local/share/jupyter/kernels/python2/kernel.json
 COPY scripts/kernel2.json /usr/local/share/jupyter/kernels/python3/kernel.json
 ENTRYPOINT ["start-jupyter.sh", "--NotebookApp.token=''", "--NotebookApp.password=''"]
